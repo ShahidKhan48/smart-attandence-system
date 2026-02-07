@@ -55,7 +55,7 @@ def admin_users():
     
     connection = db_config.get_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, name, email, mobile, roll_number, created_at FROM users ORDER BY created_at DESC")
+    cursor.execute("SELECT id, name, email, roll_number, created_at FROM users ORDER BY created_at DESC")
     users = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -308,7 +308,6 @@ def login_admin():
 def register_user():
     name = request.form['name']
     email = request.form['email']
-    mobile = request.form['mobile']
     roll_number = request.form['roll_number']
     
     # Server-side validation
@@ -323,22 +322,9 @@ def register_user():
         flash('Invalid email format. Please use format like user@gmail.com', 'danger')
         return redirect(url_for('register'))
     
-    # Validate mobile (10 digits, starts with 6-9)
-    if not mobile or len(mobile) != 10 or not mobile.isdigit() or mobile[0] not in '6789':
-        flash('Invalid mobile number. Must be 10 digits starting with 6, 7, 8, or 9.', 'danger')
-        return redirect(url_for('register'))
-    
-    # Check for duplicate mobile number
+    # Check for duplicates
     connection = db_config.get_connection()
     cursor = connection.cursor()
-    
-    cursor.execute("SELECT name FROM users WHERE mobile = %s", (mobile,))
-    existing_mobile = cursor.fetchone()
-    if existing_mobile:
-        cursor.close()
-        connection.close()
-        flash(f'Mobile number already registered with user: {existing_mobile[0]}', 'danger')
-        return redirect(url_for('register'))
     
     # Check for duplicate roll number
     cursor.execute("SELECT name FROM users WHERE roll_number = %s", (roll_number,))
@@ -365,7 +351,6 @@ def register_user():
     return render_template('capture_photo.html', 
                          name=name, 
                          email=email,
-                         mobile=mobile,
                          roll_number=roll_number)
 
 @app.route('/register_user_with_photo', methods=['POST'])
@@ -373,7 +358,6 @@ def register_user_with_photo():
     data = request.get_json()
     name = data['name']
     email = data['email']
-    mobile = data['mobile']
     roll_number = data['roll_number']
     photo_data = data['photo']
     
@@ -386,20 +370,42 @@ def register_user_with_photo():
         image = Image.open(io.BytesIO(image_bytes))
         image_array = np.array(image)
         
-        # Generate a simple face encoding (demo version)
+        # Generate face encoding
         face_encoding = face_utils.process_image_for_encoding(image_array)
         
         if face_encoding is not None:
             connection = db_config.get_connection()
             cursor = connection.cursor()
             
+            # Check for duplicate face
+            cursor.execute("SELECT id, name, face_encoding FROM users")
+            existing_users = cursor.fetchall()
+            
+            if existing_users:
+                # Compare with all existing faces
+                for user in existing_users:
+                    user_id, user_name, stored_encoding_hex = user
+                    stored_encoding = pickle.loads(bytes.fromhex(stored_encoding_hex))
+                    
+                    # Compare faces with tolerance of 0.3 (stricter matching)
+                    match_index, distance = face_utils.compare_faces([stored_encoding], face_encoding, tolerance=0.3)
+                    
+                    if match_index is not None:
+                        cursor.close()
+                        connection.close()
+                        return jsonify({
+                            'success': False, 
+                            'message': f'This face is already registered with user: {user_name}. Please use a different photo or contact admin.'
+                        })
+            
+            # No duplicate found, proceed with registration
             # Convert face encoding to string for storage
             encoding_str = pickle.dumps(face_encoding).hex()
             
             cursor.execute("""
-                INSERT INTO users (name, email, mobile, roll_number, face_encoding) 
-                VALUES (%s, %s, %s, %s, %s)
-            """, (name, email, mobile, roll_number, encoding_str))
+                INSERT INTO users (name, email, roll_number, face_encoding) 
+                VALUES (%s, %s, %s, %s)
+            """, (name, email, roll_number, encoding_str))
             
             connection.commit()
             cursor.close()

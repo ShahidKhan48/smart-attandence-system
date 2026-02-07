@@ -25,7 +25,6 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Mobile</th>
                                 <th>Roll Number</th>
                                 <th>Registered On</th>
                             </tr>
@@ -37,8 +36,7 @@
                                 <td>{{ user[1] }}</td>
                                 <td>{{ user[2] }}</td>
                                 <td>{{ user[3] }}</td>
-                                <td>{{ user[4] }}</td>
-                                <td>{{ user[5].strftime('%Y-%m-%d %H:%M') if user[5] else 'N/A' }}</td>
+                                <td>{{ user[4].strftime('%Y-%m-%d %H:%M') if user[4] else 'N/A' }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

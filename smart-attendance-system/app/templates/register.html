@@ -42,17 +42,6 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="mobile" class="form-label">Mobile Number</label>
-                        <input type="text" class="form-control" id="mobile" name="mobile" 
-                               pattern="[6-9][0-9]{9}" 
-                               maxlength="10" 
-                               placeholder="Enter 10 digit mobile number"
-                               required>
-                        <small class="text-muted">Enter 10 digits only (without +91 or 0)</small>
-                        <div id="mobileError" class="text-danger" style="display: none;"></div>
-                    </div>
-                    
-                    <div class="mb-3">
                         <label for="roll_number" class="form-label">Roll Number / Employee ID</label>
                         <input type="text" class="form-control" id="roll_number" name="roll_number" 
                                placeholder="Enter roll number or employee ID"
@@ -102,20 +91,16 @@
 document.getElementById('registerForm').addEventListener('submit', function(e) {
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
-    const mobileInput = document.getElementById('mobile');
     const nameError = document.getElementById('nameError');
     const emailError = document.getElementById('emailError');
-    const mobileError = document.getElementById('mobileError');
     
     let isValid = true;
     
     // Reset errors
     nameError.style.display = 'none';
     emailError.style.display = 'none';
-    mobileError.style.display = 'none';
     nameInput.classList.remove('is-invalid');
     emailInput.classList.remove('is-invalid');
-    mobileInput.classList.remove('is-invalid');
     
     // Validate Name
     const name = nameInput.value.trim();
@@ -181,45 +166,6 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
         emailInput.focus();
         return false;
     }
-    
-    // Validate Mobile
-    const mobile = mobileInput.value;
-    
-    if (mobile.startsWith('91') || mobile.startsWith('0')) {
-        e.preventDefault();
-        mobileError.textContent = 'Mobile number should not start with 91 or 0. Enter 10 digits only.';
-        mobileError.style.display = 'block';
-        mobileInput.classList.add('is-invalid');
-        mobileInput.focus();
-        return false;
-    }
-    
-    if (mobile.length !== 10) {
-        e.preventDefault();
-        mobileError.textContent = 'Mobile number must be exactly 10 digits.';
-        mobileError.style.display = 'block';
-        mobileInput.classList.add('is-invalid');
-        mobileInput.focus();
-        return false;
-    }
-    
-    if (!/^\d+$/.test(mobile)) {
-        e.preventDefault();
-        mobileError.textContent = 'Mobile number should contain only digits.';
-        mobileError.style.display = 'block';
-        mobileInput.classList.add('is-invalid');
-        mobileInput.focus();
-        return false;
-    }
-    
-    if (!/^[6-9]/.test(mobile)) {
-        e.preventDefault();
-        mobileError.textContent = 'Mobile number should start with 6, 7, 8, or 9.';
-        mobileError.style.display = 'block';
-        mobileInput.classList.add('is-invalid');
-        mobileInput.focus();
-        return false;
-    }
 });
 
 // Real-time validation for Name
@@ -248,27 +194,6 @@ document.getElementById('email').addEventListener('input', function(e) {
     const emailError = document.getElementById('emailError');
     if (e.target.value.length > 0) {
         emailError.style.display = 'none';
-        e.target.classList.remove('is-invalid');
-    }
-});
-
-// Real-time validation for Mobile
-document.getElementById('mobile').addEventListener('input', function(e) {
-    const mobileError = document.getElementById('mobileError');
-    let value = e.target.value;
-    
-    // Remove non-numeric characters
-    value = value.replace(/\D/g, '');
-    
-    // Limit to 10 digits
-    if (value.length > 10) {
-        value = value.slice(0, 10);
-    }
-    
-    e.target.value = value;
-    
-    if (value.length > 0) {
-        mobileError.style.display = 'none';
         e.target.classList.remove('is-invalid');
     }
 });
