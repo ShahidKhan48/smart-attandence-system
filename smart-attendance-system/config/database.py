@@ -51,6 +51,7 @@ class DatabaseConfig:
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
+                mobile VARCHAR(10) UNIQUE NOT NULL,
                 roll_number VARCHAR(50) UNIQUE NOT NULL,
                 face_encoding TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

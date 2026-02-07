@@ -49,6 +49,7 @@
 <form id="registration-form" style="display: none;">
     <input type="hidden" id="user-name" value="{{ name }}">
     <input type="hidden" id="user-email" value="{{ email }}">
+    <input type="hidden" id="user-mobile" value="{{ mobile }}">
     <input type="hidden" id="user-roll" value="{{ roll_number }}">
 </form>
 {% endblock %}
@@ -105,6 +106,7 @@ document.getElementById('confirm-btn').addEventListener('click', function() {
     // Get user data
     const name = document.getElementById('user-name').value;
     const email = document.getElementById('user-email').value;
+    const mobile = document.getElementById('user-mobile').value;
     const roll_number = document.getElementById('user-roll').value;
     
     // Send data to server
@@ -116,6 +118,7 @@ document.getElementById('confirm-btn').addEventListener('click', function() {
         body: JSON.stringify({
             name: name,
             email: email,
+            mobile: mobile,
             roll_number: roll_number,
             photo: capturedImageData
         })
