@@ -121,8 +121,15 @@ Most existing systems lack the combination of affordability, accuracy, and ease 
 - **Face Recognition:** Accurate identification using trained models
 - **Instant Attendance Marking:** Automatic database updates upon recognition
 - **User Management:** Registration, profile updates, and user administration
+- **Comprehensive Admin Dashboard:** 
+  - View all registered users in tabular format
+  - Today's attendance report with real-time updates
+  - Monthly attendance analytics with percentage calculations
+  - System settings and configuration panel
+  - Quick action buttons for easy navigation
 - **Reporting Dashboard:** Comprehensive attendance reports and statistics
-- **Security Features:** Encrypted data storage and secure access controls
+- **Security Features:** Session-based authentication, encrypted data storage, and secure access controls
+- **Responsive UI:** Bootstrap 5-based modern interface with Font Awesome icons
 
 ### Advantages over Existing Systems:
 - **Cost-Effective:** Lower implementation and maintenance costs
@@ -130,7 +137,10 @@ Most existing systems lack the combination of affordability, accuracy, and ease 
 - **High Accuracy:** Advanced algorithms ensure reliable recognition
 - **Real-Time Processing:** Instant attendance marking and updates
 - **Scalable Architecture:** Easily adaptable to different organizational needs
-- **Comprehensive Reporting:** Detailed analytics and insights
+- **Comprehensive Reporting:** Detailed analytics with visual indicators and percentage calculations
+- **User-Friendly Interface:** Modern Bootstrap 5 design with intuitive navigation
+- **Secure Authentication:** Session-based admin login with logout functionality
+- **Dockerized Deployment:** Easy deployment using Docker containers for consistency across environments
 
 ---
 
@@ -210,16 +220,22 @@ Most existing systems lack the combination of affordability, accuracy, and ease 
 - **Duplicate Prevention:** Avoiding multiple entries for same person
 
 ### 11.4 Reporting Module
-- **Daily Reports:** Day-wise attendance summaries
-- **Monthly Analytics:** Comprehensive monthly statistics
+- **Daily Reports:** Day-wise attendance summaries with timestamps
+- **Today's Report View:** Real-time display of today's attendance with student names, roll numbers, and check-in times
+- **Monthly Analytics:** Comprehensive monthly statistics with attendance percentages
+- **Attendance Percentage Calculation:** Automatic calculation based on working days (default: 22 days/month)
+- **Color-Coded Status:** Visual indicators for attendance performance (Green: ≥75%, Yellow: 50-74%, Red: <50%)
 - **Custom Reports:** Flexible reporting with date ranges
-- **Export Functionality:** PDF and Excel report generation
+- **Export Functionality:** PDF and Excel report generation (future enhancement)
 
 ### 11.5 Admin Dashboard
-- **User Management:** Add, edit, delete user profiles
-- **System Configuration:** Camera settings and recognition parameters
-- **Database Administration:** Data backup and maintenance
-- **Security Controls:** Access management and permissions
+- **User Management:** View all registered users with complete details
+- **Today's Report:** Real-time attendance tracking with timestamps
+- **Monthly Report:** Comprehensive monthly statistics with attendance percentages
+- **Settings Panel:** System configuration and admin profile management
+- **Quick Actions:** One-click access to all administrative functions
+- **Statistics Display:** Total users and today's attendance count
+- **Security Controls:** Session-based authentication and logout functionality
 
 ---
 
@@ -260,6 +276,7 @@ Most existing systems lack the combination of affordability, accuracy, and ease 
 ### Software Requirements:
 - **Python 3.8+** with pip package manager
 - **MySQL Server 8.0+** or XAMPP
+- **Docker & Docker Compose** (for containerized deployment)
 - **Web Browser:** Chrome, Firefox, or Edge
 - **Python Libraries:**
   - Flask==2.3.3
@@ -268,62 +285,198 @@ Most existing systems lack the combination of affordability, accuracy, and ease 
   - mysql-connector-python==8.1.0
   - Pillow==10.0.0
   - numpy==1.24.3
+  - Bootstrap 5.3.0 (CDN)
+  - Font Awesome 6.0.0 (CDN)
 
 ---
 
-## 13. Implementation Plan
+## 13. Admin Dashboard Features (Detailed)
+
+### 13.1 Dashboard Overview
+The admin dashboard provides a centralized control panel for managing the entire attendance system. Upon successful login, administrators are presented with:
+
+- **Statistics Cards:**
+  - Total Registered Users count
+  - Today's Attendance count
+  - Visual icons for quick identification
+
+- **Quick Action Buttons:**
+  - View All Users
+  - Today's Report
+  - Monthly Report
+  - Settings
+
+### 13.2 User Management Page
+Displays all registered users in a comprehensive table format:
+- User ID
+- Full Name
+- Email Address
+- Roll Number
+- Registration Date and Time
+- Total user count display
+- Back to Dashboard navigation
+
+### 13.3 Today's Report Page
+Real-time attendance tracking for the current day:
+- Student Name
+- Roll Number
+- Check-in Time (HH:MM:SS format)
+- Sequential numbering
+- Total present count
+- Date display in readable format (e.g., "February 07, 2026")
+- Empty state handling for days with no attendance
+
+### 13.4 Monthly Report Page
+Comprehensive monthly attendance analytics:
+- Student Name and Roll Number
+- Days Present count
+- Attendance Percentage calculation
+- Color-coded badges:
+  - Green (≥75%): Good attendance
+  - Yellow (50-74%): Average attendance
+  - Red (<50%): Poor attendance
+- Based on 22 working days per month (configurable)
+- Current month and year display
+
+### 13.5 Settings Page
+System configuration and admin management:
+- **Admin Profile Section:**
+  - Username display
+  - Password change functionality (placeholder)
+  
+- **System Settings:**
+  - Working days per month configuration
+  - Minimum attendance percentage threshold
+  - Face recognition threshold adjustment
+  
+- **Danger Zone:**
+  - Clear all attendance records (with confirmation)
+  - Delete all users (with confirmation)
+
+### 13.6 Security Features
+- Session-based authentication
+- Login required for all admin routes
+- Logout functionality with session clearing
+- Redirect to login page for unauthorized access
+- Flash messages for user feedback
+
+---
+
+## 14. Deployment Guide
+
+### 14.1 Docker Deployment
+The system includes Docker configuration for easy deployment:
+
+**Files:**
+- `Dockerfile`: Python application container configuration
+- `docker-compose.yml`: Multi-container orchestration
+- `.dockerignore`: Excludes unnecessary files from build
+
+**Deployment Steps:**
+```bash
+# Navigate to project directory
+cd smart-attendance-system
+
+# Build and start containers
+docker-compose up -d
+
+# Check container status
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+
+# Stop containers
+docker-compose down
+```
+
+**Container Architecture:**
+- **Web Container:** Flask application (Port 5000)
+- **MySQL Container:** Database server (Port 3306)
+- **Network:** Custom bridge network for inter-container communication
+- **Volume:** Persistent MySQL data storage
+
+### 14.2 Manual Deployment
+For traditional deployment without Docker:
+
+1. Install Python 3.8+ and MySQL
+2. Create virtual environment
+3. Install dependencies: `pip install -r requirements.txt`
+4. Configure database connection in `config/database.py`
+5. Run database setup: `python setup_database.py`
+6. Start application: `python app.py`
+7. Access at `http://localhost:5000`
+
+---
+
+## 15. Implementation Plan
 
 ### Phase 1: System Setup and Basic Development (Weeks 1-4)
 - Environment setup and dependency installation
+- Docker configuration for containerized deployment
 - Basic face detection implementation
-- Database design and creation
-- User interface mockups
+- Database design and creation with MySQL
+- User interface mockups with Bootstrap 5
 
 ### Phase 2: Core Functionality Development (Weeks 5-8)
 - Face recognition algorithm implementation
-- User registration module development
-- Attendance marking functionality
-- Basic admin dashboard
+- User registration module with camera integration
+- Attendance marking functionality with duplicate prevention
+- Basic admin dashboard with statistics
+- Session-based authentication system
 
 ### Phase 3: Advanced Features and Integration (Weeks 9-12)
-- Reporting module development
+- Complete admin dashboard with all pages:
+  - User management table
+  - Today's attendance report
+  - Monthly analytics with percentages
+  - Settings panel
+- Reporting module with color-coded indicators
 - System optimization and performance tuning
-- Security implementation
-- User interface enhancement
+- Security implementation with session management
+- User interface enhancement with Font Awesome icons
 
 ### Phase 4: Testing and Deployment (Weeks 13-16)
 - Unit testing and integration testing
+- Docker deployment testing
 - User acceptance testing
-- Bug fixes and optimization
-- System deployment and documentation
+- Bug fixes and optimization (including admin button click fixes)
+- System deployment and comprehensive documentation
+- Synopsis and project report finalization
 
 ---
 
-## 14. Expected Outcomes
+## 16. Expected Outcomes
 
 ### Immediate Benefits:
 - 90%+ reduction in attendance marking time
 - Elimination of proxy attendance
 - Accurate and reliable attendance records
-- Automated report generation
+- Automated report generation with visual analytics
+- Real-time attendance monitoring through admin dashboard
+- Easy access to user information and attendance statistics
 
 ### Long-term Impact:
 - Improved institutional efficiency
-- Better attendance analytics and insights
-- Enhanced security and accountability
+- Better attendance analytics and insights with percentage tracking
+- Enhanced security and accountability through session management
 - Cost savings in administrative processes
+- Scalable solution deployable via Docker containers
+- Foundation for future AI/ML enhancements
 
 ---
 
-## 15. Conclusion
+## 17. Conclusion
 
 The Smart Attendance System Using Face Recognition represents a significant advancement in attendance management technology. By leveraging modern computer vision and machine learning techniques, this system addresses the fundamental challenges of traditional attendance methods while providing enhanced accuracy, efficiency, and security.
 
-The successful implementation of this project will not only solve current attendance-related problems but also establish a foundation for future enhancements and integrations in educational and corporate environments.
+The implementation includes a comprehensive admin dashboard with real-time reporting, user management, and analytics capabilities. The system is containerized using Docker for easy deployment and scalability. With features like session-based authentication, color-coded attendance indicators, and intuitive navigation, the system provides a complete solution for educational institutions and corporate environments.
+
+The successful implementation of this project not only solves current attendance-related problems but also establishes a foundation for future enhancements and integrations, including mobile applications, cloud deployment, and advanced AI-driven analytics.
 
 ---
 
-## 16. References
+## 18. References
 
 1. Viola, P., & Jones, M. (2001). Rapid object detection using a boosted cascade of simple features.
 2. Turk, M., & Pentland, A. (1991). Eigenfaces for recognition.
@@ -331,6 +484,10 @@ The successful implementation of this project will not only solve current attend
 4. Schroff, F., Kalenichenko, D., & Philbin, J. (2015). FaceNet: A unified embedding for face recognition.
 5. OpenCV Documentation: https://opencv.org/
 6. dlib Documentation: http://dlib.net/
+7. Flask Documentation: https://flask.palletsprojects.com/
+8. Bootstrap 5 Documentation: https://getbootstrap.com/docs/5.3/
+9. Docker Documentation: https://docs.docker.com/
+10. MySQL Documentation: https://dev.mysql.com/doc/
 
 ---
 
