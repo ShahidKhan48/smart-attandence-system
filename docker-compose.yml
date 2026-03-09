@@ -38,6 +38,21 @@ services:
     volumes:
       - ./face_encodings:/app/face_encodings
 
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: attendance_phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - attendance_network
+
 volumes:
   mysql_data:
 
